@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/ajdfajdfl/.oh-my-zsh
+export ZSH=~/.oh-my-zsh
 
 [[ -n "$SSH_CLIENT" ]] || export DEFAULT_USER="ajdfajdfl"
 
@@ -10,7 +10,10 @@ fpath=(/usr/local/share/zsh-completions $fpath)
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="agnoster"
+
+#ZSH_THEME="frontcube"
+
+ZSH_THEME="random"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -58,7 +61,6 @@ plugins=(git)
 
 # User configuration
 
-export PATH="/Users/ajdfajdfl/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -87,11 +89,12 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias subl="open -a Sublime\ Text\ 2"
-alias chrom="open -a Google\ Chrome"
-alias safa="open -a Safari"
-alias atom="open -a Atom"
-alias line="open -a LINE"
-alias airm="open -a Airmail\ 2"
-alias sour="open -a SourceTree"
-alias ever="open -a Evernote"
+
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+alias rvm-prompt=$HOME/.rvm/bin/rvm-prompt
+
