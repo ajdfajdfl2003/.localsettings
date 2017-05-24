@@ -4,7 +4,7 @@ export ZSH=~/.oh-my-zsh
 [[ -n "$SSH_CLIENT" ]] || export DEFAULT_USER="ajdfajdfl"
 
 # zsh-completions
-fpath=(/usr/local/share/zsh-completions $fpath)
+#fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
