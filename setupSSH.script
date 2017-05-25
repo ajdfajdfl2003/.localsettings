@@ -1,0 +1,8 @@
+# Update apt
+sudo apt update\
+&& sudo apt install ssh -y
+
+
+# Send your ssh-key to server from client
+# ssh-copy-id account@your_server_ip
+# then you can do anything you want on the terminal

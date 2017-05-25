@@ -1,0 +1,100 @@
+# Network configuration
+sudo sed -i -e 's/dhcp/static/' /etc/network/interfaces
+sudo sed -i -e '$a\
+    address [IPADDRESS]\
+    netmask [NETMASK]\
+    gateway [GATEWAY]\
+    dns-nameservers [DOMAIN-DNS] 8.8.4.4\
+    dns-search [DOMAIN]' /etc/network/interfaces
+sudo systemctl restart networking.service
+
+# Change hostname
+hostname
+echo "Prepare to change Hostname"
+sudo hostnamectl set-hostname [HOSTNAME]
+sudo sed -i -e 's/^127.0.1.1.*/127.0.1.1    [HOSTNAME].[DOMAIN_LOWERCASE] [HOSTNAME]/' /etc/hosts
+hostnamectl
+sudo systemctl restart networking.service
+
+# Ntp
+sudo apt-get install ntp ntpdate -y\
+&&sudo ntpdate -q [DOMAIN_LOWERCASE]\
+&&sudo ntpdate [DOMAIN_LOWERCASE]
+
+# Prepare to Join AD Domain
+sudo apt-get install samba krb5-config krb5-user winbind libpam-winbind libnss-winbind -y
+
+## Creating a Kerberos Ticket
+sudo kinit [DOMAIN_MANAGER] && sudo klist
+
+## Setting Samba
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.initial
+sudo sed -i -e 's/   workgroup = WORKGROUP/   workgroup = [DOMAIN_WORKGROUP]\
+   realm = [DOMAIN_LOWERCASE]\
+   client signing = yes\
+   client use spnego = yes\
+   security = ads\
+   kerberos method = secrets and keytab\
+   idmap config * : backend = tdb\
+   idmap config *:range = 50000-1000000\
+   winbind use default domain = true\
+   winbind offline logon = false\
+   winbind nss info = rfc2307\
+   winbind enum users = yes\
+   winbind enum groups = yes\
+   vfs objects = acl_xattr\
+   map acl inherit = Yes\
+   store dos attributes = Yes/' /etc/samba/smb.conf
+
+## Restart service and join Domain
+sudo systemctl restart smbd nmbd winbind
+sudo systemctl enable smbd nmbd winbind
+sudo net ads join -U [DOMAIN_MANAGER]
+
+
+echo "Prepare to install/update git"
+
+# Settitng up vim and terminal
+sudo apt update
+sudo apt install git zsh -y
+cd
+git clone https://github.com/ajdfajdfl2003/hash_vim.git
+cd hash_vim
+./install.sh
+cd
+
+echo "Prepare to setting up SSH"
+# Setting up SSH
+
+sudo sed -i -e 's/^Port 22/Port [CHANGE_SSH_PORT_TO_U_WANT]/' /etc/ssh/sshd_config\
+&&sudo sed -i -e 's/^#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config\
+&& sudo sed -i -e 's/^PubkeyAuthentication no/PubkeyAuthentication yes/' /etc/ssh/sshd_config\
+&& sudo sed -i -e 's/^ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config\
+&& systemctl restart ssh.service
+
+echo "Prepare to install ufw"
+sudo apt update\
+&&sudo apt install ufw -y
+
+sudo ufw --force enable
+sudo ufw allow [CHANGE_SSH_PORT_TO_U_WANT]/tcp
+sudo ufw deny OpenSSH
+sudo service ufw restart
+
+echo "Prepare to install fail2ban"
+sudo apt update\
+&&sudo apt install fail2ban -y
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+sudo sed -i -e 's/^bantime  = 600/bantime  = 86400/' /etc/fail2ban/jail.local\
+&& sudo sed -i -e 's/^maxretry = 5/maxretry = 3/' /etc/fail2ban/jail.local\
+&& sudo sed -i -e 's/^port    = ssh/port    = ssh,[CHANGE_SSH_PORT_TO_U_WANT]/g' /etc/fail2ban/jail.local\
+&& sudo service fail2ban restart
+
+echo "Prepare to install Docker"
+curl -sSL https://get.docker.com/ | sudo sh
+sudo usermod -aG docker [YOUR_USER_NAME]
+
+echo "Prepare to install oh-my-zsh"
+sudo chsh -s /bin/zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
