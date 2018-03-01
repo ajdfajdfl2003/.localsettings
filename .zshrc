@@ -4,7 +4,7 @@ export ZSH=~/.oh-my-zsh
 [[ -n "$SSH_CLIENT" ]] || export DEFAULT_USER="ajdfajdfl"
 
 # zsh-completions
-#fpath=(/usr/local/share/zsh-completions $fpath)
+fpath=(/usr/local/share/zsh-completions $fpath)
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -61,6 +61,7 @@ plugins=(git battery)
 
 # User configuration
 
+export PATH="/Users/ajdfajdfl/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -98,3 +99,4 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 alias rvm-prompt=$HOME/.rvm/bin/rvm-prompt
 
+export PATH="/usr/local/sbin:$PATH"
